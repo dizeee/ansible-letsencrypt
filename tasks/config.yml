@@ -1,0 +1,16 @@
+---
+- name: Common nginx ssl configuration
+  template:
+    src: ssl-params.conf.j2
+    dest: "{{ letsencrypt_nginx_snippets_prefix }}params.conf"
+  become: true
+  become_user: root
+  notify: reload nginx
+
+- name: Domain specific ndinx ssl configuration
+  template:
+    src: ssl-domain.conf.j2
+    dest: "{{ letsencrypt_nginx_snippets_prefix }}{{ letsencrypt_primary_domain }}.conf"
+  become: true
+  become_user: root
+  notify: reload nginx

@@ -1,0 +1,20 @@
+---
+- include_vars:
+    dir: "vars"
+
+- name: Check required parameters
+  fail: msg="Required variable `{{ item.key }}` is not set or is empty."
+  when: not item.value
+  with_dict:
+    letsencrypt_primary_domain: "{{ letsencrypt_primary_domain }}"
+    letsencrypt_email: "{{ letsencrypt_email }}"
+  no_log: True
+
+- name: Combine list of domains
+  set_fact:
+    letsencrypt_domains: "[ '{{ letsencrypt_primary_domain }}' ] + {{ letsencrypt_secondary_domains }}"
+
+- include: install.yml
+- include: cert.yml
+- include: diffie-hellman.yml
+- include: config.yml

@@ -1,0 +1,45 @@
+---
+- name: Create letsencrypt webroot directory
+  file:
+    path: "{{ letsencrypt_webroot }}"
+    state: directory
+    mode: 0755
+
+- name: Generate SSL serificate
+  shell: "letsencrypt certonly --verbose --non-interactive --keep-until-expiring --agree-tos --email {{ letsencrypt_email }} --webroot --webroot-path={{ letsencrypt_webroot }} --domains {{ letsencrypt_domains | join(',') }} | grep -oE '/etc/letsencrypt/live/[a-z0-9.-]+' | grep -oE '[a-z0-9.-]+$' | head -1"
+  become: true
+  become_user: root
+  register: letsencrypt_result
+  ignore_errors: yes
+  # when: We actually do not need a condition here because letsencrypt has --keep-until-expiring option
+  # and will not regenerate existing valid certificates.
+
+- name: Get certificate domain folder name
+  set_fact:
+    letsencrypt_cert_domain: "{{ letsencrypt_result.stdout }}"
+
+- name: Is the previously issued certificate still valid?
+  set_fact:
+    letsencrypt_cert_still_valid: True
+  when: "'Cert not yet due for renewal' in letsencrypt_result.stderr"
+
+- name: Check if letsencrypt succeded
+  fail:
+    msg: "Failed to create certificate: {{ letsencrypt_result.stderr }}"
+  when: not letsencrypt_cert_domain and not letsencrypt_cert_still_valid
+
+# TODO: Resolve this automaticaly
+- name: Check if the primary domain matches letsencrypt directory name
+  fail:
+    msg: "Somthing went wrong, specified primary domain {{ letsencrypt_primary_domain }} doesn't match letsencrypt primary domain {{ letsencrypt_cert_domain }}: {{ letsencrypt_result.stderr }}"
+  when: not letsencrypt_cert_still_valid and letsencrypt_cert_domain != letsencrypt_primary_domain
+
+- name: Set autorenew cron job
+  cron:
+    name: "Renew letsencrypt certificates"
+    minute: "15"
+    hour: "3"
+    weekday: "1"
+    job: "/usr/bin/letsencrypt renew >> /var/log/le-renew.log && /bin/systemctl reload nginx"
+  become: true
+  become_user: root

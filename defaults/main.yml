@@ -1,0 +1,21 @@
+---
+# Primary domain to generate SSL certificates for
+letsencrypt_primary_domain: ~
+
+# List of other domains to include into the certificate, e. g. subdomains
+letsencrypt_secondary_domains: []
+
+# Email used for registration and recovery contact
+letsencrypt_email: ~
+
+# Path to store files for webroot authentication
+letsencrypt_webroot: /var/www/letsencrypt
+
+# Prefix for nginx snippet files
+letsencrypt_nginx_snippets_prefix: /etc/nginx/snippets/ssl-
+
+# Path to Diffie-Hellman group file
+letsencrypt_dhparam_path: /etc/ssl/certs/dhparam.pem
+
+# Diffie-Hellman group strenght
+letsencrypt_dhparam_strength: 2048

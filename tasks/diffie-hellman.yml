@@ -1,0 +1,9 @@
+---
+- stat: path="{{ letsencrypt_dhparam_path }}"
+  register: shorewall_rules
+
+- name: Generate Diffie-Hellman group
+  command: "openssl dhparam -out {{ letsencrypt_dhparam_path }} {{ letsencrypt_dhparam_strength }}"
+  become: true
+  become_user: root
+  when: shorewall_rules.stat.exists == False
