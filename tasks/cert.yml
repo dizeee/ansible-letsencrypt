@@ -6,7 +6,7 @@
     mode: 0755
 
 - name: Generate SSL serificate
-  shell: "letsencrypt certonly --verbose --non-interactive --keep-until-expiring --agree-tos --email {{ letsencrypt_email }} --webroot --webroot-path={{ letsencrypt_webroot }} --domains {{ letsencrypt_domains | join(',') }} | grep -oE '/etc/letsencrypt/live/[a-z0-9.-]+' | grep -oE '[a-z0-9.-]+$' | head -1"
+  shell: "letsencrypt certonly --verbose --non-interactive {% if letsencrypt_expand == True %}--expand {% endif %} {% if letsencrypt_staging == True %}--staging {% endif %}--keep-until-expiring --agree-tos --email {{ letsencrypt_email }} --webroot --webroot-path={{ letsencrypt_webroot }} --domains {{ letsencrypt_domains | join(',') }} | tr -d ' \\t\\n\\r' | grep -oE '/etc/letsencrypt/live/[a-z0-9.-]+' | grep -oE '[a-z0-9.-]+$' | head -1"
   become: true
   become_user: root
   register: letsencrypt_result

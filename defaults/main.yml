@@ -20,3 +20,9 @@ letsencrypt_dhparam_path: /etc/ssl/certs/dhparam.pem
 
 # Diffie-Hellman group strenght
 letsencrypt_dhparam_strength: 2048
+
+# Issue staging sertificate instead of production (higher issuing rate limit, less secure)
+letsencrypt_staging: False
+
+# If an existing cert covers some subset of the requested names, always expand and replace it with the additional names
+letsencrypt_expand: False
