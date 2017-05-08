@@ -10,9 +10,14 @@
     letsencrypt_email: "{{ letsencrypt_email }}"
   no_log: True
 
-- name: Combine list of domains
+- name: Init domains list
   set_fact:
-    letsencrypt_domains: "[ '{{ letsencrypt_primary_domain }}' ] + {{ letsencrypt_secondary_domains }}"
+    letsencrypt_domains:
+      - "{{ letsencrypt_primary_domain }}"
+
+- name: Combine domains list
+  set_fact:
+    letsencrypt_domains: "{{ letsencrypt_domains | union(letsencrypt_secondary_domains) }}"
 
 - include: install.yml
 - include: cert.yml
