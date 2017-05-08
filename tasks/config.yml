@@ -1,16 +1,24 @@
 ---
+- name: Ensure nginx snippets directory exist
+  file:
+    path: "{{ letsencrypt_nginx_snippets_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Common nginx ssl configuration
   template:
     src: ssl-params.conf.j2
-    dest: "{{ letsencrypt_nginx_snippets_prefix }}params.conf"
-  become: true
-  become_user: root
+    dest: "{{ letsencrypt_nginx_snippets_path }}/{{ letsencrypt_nginx_snippets_prefix }}params.conf"
+    owner: root
+    group: root
   notify: reload nginx
 
 - name: Domain specific ndinx ssl configuration
   template:
     src: ssl-domain.conf.j2
-    dest: "{{ letsencrypt_nginx_snippets_prefix }}{{ letsencrypt_primary_domain }}.conf"
-  become: true
-  become_user: root
+    dest: "{{ letsencrypt_nginx_snippets_path }}/{{ letsencrypt_nginx_snippets_prefix }}{{ letsencrypt_primary_domain }}.conf"
+    owner: root
+    group: root
   notify: reload nginx

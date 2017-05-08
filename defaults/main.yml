@@ -12,7 +12,8 @@ letsencrypt_email: ~
 letsencrypt_webroot: /var/www/letsencrypt
 
 # Prefix for nginx snippet files
-letsencrypt_nginx_snippets_prefix: /etc/nginx/snippets/ssl-
+letsencrypt_nginx_snippets_path: /etc/nginx/snippets
+letsencrypt_nginx_snippets_prefix: ssl-
 
 # Path to Diffie-Hellman group file
 letsencrypt_dhparam_path: /etc/ssl/certs/dhparam.pem
